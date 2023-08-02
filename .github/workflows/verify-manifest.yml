@@ -26,10 +26,14 @@ jobs:
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/
           kubectl version --client
+      # - uses: azure/setup-kubectl@v3
+      #   with:
+      #     version: '<version>' # default is latest stable
+      #   id: install
 
       - name: Run trial commands
         run: |
           cd charts/velero
           ls -la
-          kubectl apply --dry-run=client -f crds/ -o yaml > v1_debug_origin_kubectl.yaml
+          kubectl apply --dry-run=none -f crds/ -o yaml > v1_debug_origin_kubectl.yaml
           cat v1_debug_origin_kubectl.yaml
