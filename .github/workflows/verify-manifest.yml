@@ -50,7 +50,7 @@ jobs:
           cd charts/velero
           # Preparing manifests using velero
           velero install --crds-only --dry-run -o yaml | kubectl apply --dry-run=client -f - -o yaml > velero_manifest.yaml
-          kubectl apply --dry-run=none -f crds/ -o yaml > crds_manifest.yaml
+          kubectl apply --dry-run=client -f crds/ -o yaml > crds_manifest.yaml
 
           ls -la
           # Compare the two files using diff
