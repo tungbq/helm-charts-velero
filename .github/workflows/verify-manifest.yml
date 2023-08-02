@@ -55,7 +55,7 @@ jobs:
           ls -la
           # Compare the two files using diff
           set +e
-          difference=$(diff velero_manifest.yaml crds_manifest.yaml)
+          difference=$(diff -y velero_manifest.yaml crds_manifest.yaml)
 
           # Check if there are differences
           if [ -z "$difference" ]; then
