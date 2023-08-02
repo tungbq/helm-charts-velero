@@ -45,7 +45,7 @@ jobs:
           sudo cp velero /usr/local/bin
           velero version
   
-      - name: Run trial commands
+      - name: Compare manifests
         run: |
           cd charts/velero
           # Preparing manifests using velero
@@ -54,6 +54,7 @@ jobs:
 
           ls -la
           # Compare the two files using diff
+          set +e
           difference=$(diff velero_manifest.yaml crds_manifest.yaml)
 
           # Check if there are differences
@@ -62,5 +63,6 @@ jobs:
           else
               echo "Differences between $file1 and $file2:"
               echo "$difference"
+              exit 1
           fi
 
