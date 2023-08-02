@@ -1,4 +1,4 @@
-name: Install kubectl
+name: Check Velero Manifest
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - ci-verify-manifest
 
 jobs:
-  install-kubectl:
+  check-velero-manifest:
     runs-on: ubuntu-latest
 
     steps:
