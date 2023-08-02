@@ -13,6 +13,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Checkout repository
+        run: |
+          ls -la
+          git status
+
       - name: Install kubectl
         run: |
           # Install kubectl
