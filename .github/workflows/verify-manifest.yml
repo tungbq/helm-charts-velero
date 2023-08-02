@@ -33,13 +33,21 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@v1.2.0
         with:
-          version: "v0.14.0"
-          node_image: "kindest/node:v1.19.16"
+          version: 'v0.14.0'
+          node_image: 'kindest/node:v1.19.16'
+
+      - name: Install velero
+        run: |
+          wget https://github.com/vmware-tanzu/velero/releases/download/v1.11.1/velero-v1.11.1-linux-amd64.tar.gz
+          tar -xvf velero-v1.11.1-linux-amd64.tar.gz
+          cd velero-v1.11.1-linux-amd64
+          sudo cp velero /usr/local/bin
+          velero version
 
       - name: Run trial commands
         run: |
           cd charts/velero
-          ls -la
-          kubectl version
+          # Preparing manifests with velero
+          velero install --crds-only --dry-run -o yaml | kubectl apply --dry-run=client -f - -o yaml> v1_debug_velero_kubectl.yml
           kubectl apply --dry-run=none -f crds/ -o yaml > v1_debug_origin_kubectl.yaml
           cat v1_debug_origin_kubectl.yaml
