@@ -30,21 +30,21 @@ jobs:
       - name: Compare manifests
         run: |
           cd charts/velero
-          mkdir diff_ws
+          mkdir diff_workspace
 
-          echo "Generate velero manifests file"
-          velero install --crds-only --dry-run -o yaml | kubectl apply --dry-run=client -f - -o yaml > diff_ws/velero_manifest.yaml
-          echo "Generate crds manifests file"
-          kubectl apply --dry-run=client -f crds/ -o yaml > diff_ws/crds_manifest.yaml
+          echo "Generate velero manifest file"
+          velero install --crds-only --dry-run -o yaml | kubectl apply --dry-run=client -f - -o yaml > diff_workspace/velero_manifest.yaml
+          echo "Generate crds manifest file"
+          kubectl apply --dry-run=client -f crds/ -o yaml > diff_workspace/crds_manifest.yaml
 
           echo "Compare the two files using diff"
-          difference=$(diff -y --color diff_ws/velero_manifest.yaml diff_ws/crds_manifest.yaml) || true
+          difference=$(diff -y --color diff_workspace/velero_manifest.yaml diff_workspace/crds_manifest.yaml) || true
           if [ -z "$difference" ]; then
             echo "Files are synced. No differences found."
           else
             echo "Differences between velero_manifest.yaml and crds_manifest.yaml:"
             echo "$difference"
-            echo "$difference" > diff_ws/diff_manifest.txt
+            echo "$difference" > diff_workspace/diff_manifest.txt
             exit 1
           fi
 
@@ -52,8 +52,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: velero_manifest
+          name: diff_output
           path: |
-            charts/velero/diff_ws/velero_manifest.yaml
-            charts/velero/diff_ws/crds_manifest.yaml
-            charts/velero/diff_ws/diff_manifest.txt
+            charts/velero/diff_workspace
