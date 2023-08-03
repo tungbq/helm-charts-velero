@@ -13,25 +13,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Checkout repository
-        run: |
-          ls -la
-          git status
-
-      # TODO - consider remove this or not?
-      # - name: Install kubectl
-      #   run: |
-      #     # Install kubectl
-      #     KUBECTL_VERSION="v1.21.0" # Replace with the desired version
-      #     curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
-      #     chmod +x kubectl
-      #     sudo mv kubectl /usr/local/bin/
-      #     kubectl version --client
-      # - uses: azure/setup-kubectl@v3
-      #   with:
-      #     version: '<version>' # default is latest stable
-      #   id: install
-
       - name: Create kind cluster
         uses: helm/kind-action@v1.2.0
         with:
@@ -45,7 +26,7 @@ jobs:
           cd velero-v1.11.1-linux-amd64
           sudo cp velero /usr/local/bin
           velero version
-  
+
       - name: Compare manifests
         run: |
           cd charts/velero
@@ -66,4 +47,3 @@ jobs:
               echo "$difference"
               exit 1
           fi
-
