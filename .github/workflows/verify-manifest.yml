@@ -46,6 +46,7 @@ jobs:
           fi
   
       - name: Archive manifests
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: velero_manifest
