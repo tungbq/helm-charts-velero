@@ -30,27 +30,30 @@ jobs:
       - name: Compare manifests
         run: |
           cd charts/velero
-          # Preparing manifests using velero
-          velero install --crds-only --dry-run -o yaml | kubectl apply --dry-run=client -f - -o yaml > velero_manifest.yaml
-          kubectl apply --dry-run=client -f crds/ -o yaml > crds_manifest.yaml
+          mkdir diff_ws
 
-          # Compare the two files using diff
-          difference=$(diff -y --color velero_manifest.yaml crds_manifest.yaml) || true
+          echo "Generate velero manifests file"
+          velero install --crds-only --dry-run -o yaml | kubectl apply --dry-run=client -f - -o yaml > diff_ws/velero_manifest.yaml
+          echo "Generate crds manifests file"
+          kubectl apply --dry-run=client -f crds/ -o yaml > diff_ws/crds_manifest.yaml
+
+          echo "Compare the two files using diff"
+          difference=$(diff -y --color diff_ws/velero_manifest.yaml diff_ws/crds_manifest.yaml) || true
           if [ -z "$difference" ]; then
-              echo "Files are synced. No differences found."
+            echo "Files are synced. No differences found."
           else
-              echo "Differences between velero_manifest.yaml and crds_manifest.yaml:"
-              echo "$difference"
-              echo "$difference" > diff_manifest.txt
-              exit 1
+            echo "Differences between velero_manifest.yaml and crds_manifest.yaml:"
+            echo "$difference"
+            echo "$difference" > diff_ws/diff_manifest.txt
+            exit 1
           fi
-  
+
       - name: Archive manifests
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: velero_manifest
           path: |
-            charts/velero/velero_manifest.yaml
-            charts/velero/crds_manifest.yaml
-            charts/velero/diff_manifest.txt
+            charts/velero/diff_ws/velero_manifest.yaml
+            charts/velero/diff_ws/crds_manifest.yaml
+            charts/velero/diff_ws/diff_manifest.txt
