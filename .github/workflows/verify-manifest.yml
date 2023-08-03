@@ -35,12 +35,11 @@ jobs:
           kubectl apply --dry-run=client -f crds/ -o yaml > crds_manifest.yaml
 
           # Compare the two files using diff
-          set +e
-          difference=$(diff -y --color velero_manifest.yaml crds_manifest.yaml)
+          difference=$(diff -y --color velero_manifest.yaml crds_manifest.yaml) || true
           if [ -z "$difference" ]; then
               echo "Files are synced. No differences found."
           else
-              echo "Differences between $file1 and $file2:"
+              echo "Differences between velero_manifest.yaml and crds_manifest.yaml:"
               echo "$difference"
               echo "$difference" > diff_manifest.txt
               exit 1
