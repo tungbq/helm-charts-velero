@@ -42,6 +42,7 @@ jobs:
           else
               echo "Differences between $file1 and $file2:"
               echo "$difference"
+              echo "$difference" > diff_manifest.txt
               exit 1
           fi
   
@@ -53,3 +54,4 @@ jobs:
           path: |
             charts/velero/velero_manifest.yaml
             charts/velero/crds_manifest.yaml
+            charts/velero/diff_manifest.txt
