@@ -35,7 +35,7 @@ jobs:
           kubectl apply --dry-run=client -f crds/ -o yaml > diff_workspace/crds_manifest.yaml
 
           echo "Compare the two files using diff"
-          difference=$(diff -y --color diff_workspace/velero_manifest.yaml diff_workspace/velero_manifest.yaml) || true
+          difference=$(diff diff_workspace/velero_manifest.yaml diff_workspace/velero_manifest.yaml) || true
           if [ -z "$difference" ]; then
             echo "Files are synced. No differences found."
           else
