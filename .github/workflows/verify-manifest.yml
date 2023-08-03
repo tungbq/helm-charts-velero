@@ -30,19 +30,26 @@ jobs:
       - name: Compare manifests
         run: |
           cd charts/velero
-
           # Preparing manifests using velero
-          velero_manifest=$(velero install --crds-only --dry-run -o yaml)
-          crds_manifest=$(kubectl apply --dry-run=client -f crds/ -o yaml)
-      
-          # Compare the two manifests using diff
-          difference=$(diff -y --color <(echo "$velero_manifest") <(echo "$crds_manifest") || true)
-      
+          velero install --crds-only --dry-run -o yaml | kubectl apply --dry-run=client -f - -o yaml > velero_manifest.yaml
+          kubectl apply --dry-run=client -f crds/ -o yaml > crds_manifest.yaml
+          ls -la
+          # Compare the two files using diff
+          set +e
+          difference=$(diff -y --color velero_manifest.yaml crds_manifest.yaml)
           # Check if there are differences
           if [ -z "$difference" ]; then
-            echo "Files are synced. No differences found."
+              echo "Files are synced. No differences found."
           else
-            echo "Differences between Velero manifests and CRDs:"
-            echo "$difference"
-            exit 1
+              echo "Differences between $file1 and $file2:"
+              echo "$difference"
+              exit 1
           fi
+  
+      - name: Archive manifests
+        uses: actions/upload-artifact@v2
+        with:
+          name: velero_manifest
+          path: |
+            charts/velero/velero_manifest.yaml
+            charts/velero/crds_manifest.yaml
