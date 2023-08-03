@@ -1,6 +1,7 @@
 name: Check Velero Manifest
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - ci-verify-manifest
