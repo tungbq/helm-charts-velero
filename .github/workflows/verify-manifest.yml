@@ -34,6 +34,8 @@ jobs:
           velero install --crds-only --dry-run -o yaml | kubectl apply --dry-run=client -f - -o yaml > diff_workspace/velero_manifest.yaml
           echo "Generate crds manifest file"
           kubectl apply --dry-run=client -f crds/ -o yaml > diff_workspace/crds_manifest.yaml
+          echo "Filter non-required values"
+          yq eval 'del(.status.acceptedNames, .status.conditions, .status.storedVersions)' diff_workspace/crds_manifest.yaml
 
           echo "Compare the two files using diff"
           difference=$(diff diff_workspace/velero_manifest.yaml diff_workspace/crds_manifest.yaml) || true
