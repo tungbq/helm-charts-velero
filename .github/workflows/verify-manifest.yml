@@ -32,7 +32,7 @@ jobs:
 
           echo "Filter non-required values"
           for yaml_file in crds/*.yaml; do
-            yq eval -i 'del(.items[].status)' "crds/$yaml_file"
+            yq eval -i 'del(.items[].status)' "$yaml_file"
           done
           echo "Generate velero manifest file"
           velero install --crds-only --dry-run -o yaml | kubectl apply --dry-run=client -f - -o yaml > diff_workspace/velero_manifest.yaml
