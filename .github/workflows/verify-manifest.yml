@@ -35,8 +35,9 @@ jobs:
           echo "Generate crds manifest file"
           kubectl apply --dry-run=client -f crds/ -o yaml > diff_workspace/crds_manifest.yaml
           echo "Filter non-required values"
-          yq eval -i 'del(.items[].status)' diff_workspace/crds_manifest.yaml
-
+          for file in crds/*.yaml; do
+            yq eval -i 'del(.items[].status)' file
+          done
           echo "Compare the two files using diff"
           difference=$(diff diff_workspace/velero_manifest.yaml diff_workspace/crds_manifest.yaml) || true
           if [ -z "$difference" ]; then
